@@ -1,10 +1,10 @@
 # Wargames
 
-Wargames is an awesome service setup by the awesome folks at [OverTheWire](http://www.overthewire.org).
+Wargames is an service setup by the awesome folks at [OverTheWire](http://www.overthewire.org).
 
 It tests one's ability to exercise certain security concepts in the form of games.
 
-The best part is that it's FREE and can be started from a complete beginner!!
+The best part is that it's FREE and can be started by a complete beginner!!
 
 ## Modules
 There are a few different "games" within the WarGames. Each is essentially getting more advanced on it's way:
@@ -85,3 +85,58 @@ Boom! now you have the password and you've hacked the mainframe. Now let's go to
 ### Level 2 -> 3
 #### Game Instructions
 >The password for the next level is stored in a file called spaces in this filename located in the home directory
+
+First, let's login using the previous password and the next login of `bandit2`:
+```bash
+ssh -p 2220 bandit2@bandit.labs.overthewire.org
+
+password: CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
+```
+So this one is fairly simple. You just need to understand how spaces `" "` work on the command line. If you just simply run `cat spaces in this filename`, you'll get This
+```bash
+cat: spaces: No such file or directory
+cat: in: No such file or directory
+cat: this: No such file or directory
+cat: filename: No such file or directory
+```
+This is because separating by **spaces** will always look for another file. Basically you're asking `cat` to look for **4** different files. So we need to **escape** the **spaces**.  
+
+There are two options here:
+1. We can escape each space
+`cat spaces\ in\ this\ filename`... escaping each space OR;
+2. We can encapsulate the entire string in `" "`
+`cat "spaces in this filename"`
+
+Either one will make sure that `cat` treats the whole string as one file name... giving you the next password in the series:
+```bash
+UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
+```
+### Level 3 -> 4
+#### Game Instructions
+>The password for the next level is stored in a hidden file in the inhere directory.
+
+Let's get this one going the same way we have been. Using the next level up login `bandit3`
+```bash
+ssh -p 2220 bandit3@bandit.labs.overthewire.org
+
+password: UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
+```
+Next you'll need to navigate into the `inhere` directory:
+```bash
+cd inhere
+```
+Once inside the directory, we'll need to list all files. Now a simple `ls` to list files will return blank here. So we'll need to add the `-a` flag to show **hidden** files.
+```bash
+ls -a
+```
+Alright! Now we have a file to work with named `.hidden`
+
+Let's `cat` the `.hidden` file to see what's inside:
+
+```bash
+cat .hidden
+
+pIwrPrtPN36QITSp3EQaw936yaFoFgAB
+```
+
+Nice! Now we have the password for the next level!! 
