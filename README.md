@@ -1,6 +1,6 @@
 # Wargames
 
-Wargames is an awesome service setup by the awesome folks at [OverTheWire](www.overthewire.com).
+Wargames is an awesome service setup by the awesome folks at [OverTheWire](http://www.overthewire.org).
 
 It tests one's ability to exercise certain security concepts in the form of games.
 
