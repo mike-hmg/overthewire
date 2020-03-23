@@ -8,7 +8,10 @@ The best part is that it's FREE and can be started from a complete beginner!!
 
 ## Modules
 There are a few different "games" within the WarGames. Each is essentially getting more advanced on it's way:
-- [Bandit](## Bandit)
+
+[Bandit](#Bandit)
+
+WIP:
 - Natas
 - Leviathon
 - Krypton
