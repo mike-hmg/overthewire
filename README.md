@@ -1,5 +1,11 @@
 # Wargames
 
+TODO List:
+[] - go back over exercise 23 -> 24
+[] - clean up syntax references on code snippets
+[] - clean up overall formatting
+[] - create separate scripts to add to repo
+
 Wargames is an service setup by the awesome folks at [OverTheWire](http://www.overthewire.org).
 
 It tests one's ability to exercise certain security concepts in the form of games.
@@ -36,13 +42,13 @@ The Bandit module consists of levels 0 - 34.
 
 This level is the most basic of levels. It simply needs you to `ssh` into the game.
 You'll need the login credentials (obviously):
-```bash
+```sh
 username: bandit0
 password: bandit0
 ```
 All we have to do here is `ssh` into the WarGames.
 We do this by using the `ssh` command with the `-p` flag on the port `2220` and the `bandit0` username:
-```bash
+```sh
 ssh -p 2220 bandit0@bandit.labs.overthewire.org
 ```
 Then just use the password `bandit0` when prompted.
@@ -54,7 +60,7 @@ That's ijhgkjhgkjhgkjhgt! You're on your way to being a hacker!
 >The password for the next level is stored in a file called readme located in the home directory. Use this password to log into bandit1 using SSH. Whenever you find a password for a level, use SSH (on port 2220) to log into that level and continue the game.
 
 Super simple setup here. Just `cat` the `readme` file:
-```bash
+```sh
 cat readme
 
 boJ9jbbUNNfktd78OOpsqOltutMc3MY1
@@ -66,7 +72,7 @@ Bam! Password revealed. Now let's use the password for the next level.
 >The password for the next level is stored in a file called - located in the home directory
 
 This level is also quite simple. The password for the next level is stored in a file named `-`. So all we have to do is `ssh` using the next level `bandit1` username and  use `cat` to read the file... right?
-```bash
+```sh
 cat -
 ...
 ```
@@ -75,7 +81,7 @@ Nope!!! They pulled a sneaky on you. Notice that when you try this, the __comman
 In bash, the `-` will tell the interpreter to look for a `flag`. So what we need to do here is tell the command line that `-` is a **file**. How do we do this? With `./`
 
 State that __this current directory, look for file__:
-```bash
+```sh
 cat ./-
 
 CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
@@ -87,13 +93,13 @@ Boom! now you have the password and you've hacked the mainframe. Now let's go to
 >The password for the next level is stored in a file called spaces in this filename located in the home directory
 
 First, let's login using the previous password and the next login of `bandit2`:
-```bash
+```sh
 ssh -p 2220 bandit2@bandit.labs.overthewire.org
-
 password: CV1DtqXWVFXTvM2F0k09SHz0YwRINYA9
 ```
 So this one is fairly simple. You just need to understand how spaces `" "` work on the command line. If you just simply run `cat spaces in this filename`, you'll get This
-```bash
+
+```sh
 cat: spaces: No such file or directory
 cat: in: No such file or directory
 cat: this: No such file or directory
@@ -108,7 +114,7 @@ There are two options here:
 `cat "spaces in this filename"`
 
 Either one will make sure that `cat` treats the whole string as one file name... giving you the next password in the series:
-```bash
+```
 UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
 ```
 ### Level 3 -> 4
@@ -116,26 +122,24 @@ UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
 >The password for the next level is stored in a hidden file in the inhere directory.
 
 Let's get this one going the same way we have been. Using the next level up login `bandit3`
-```bash
+```sh
 ssh -p 2220 bandit3@bandit.labs.overthewire.org
-
 password: UmHadQclWmgdLOKQ3YNgjWxGoRMb5luK
 ```
 Next you'll need to navigate into the `inhere` directory:
-```bash
+```sh
 cd inhere
 ```
 Once inside the directory, we'll need to list all files. Now a simple `ls` to list files will return blank here. So we'll need to add the `-a` flag to show **hidden** files.
-```bash
+```sh
 ls -a
 ```
 Alright! Now we have a file to work with named `.hidden`
 
 Let's `cat` the `.hidden` file to see what's inside:
 
-```bash
+```sh
 cat .hidden
-
 pIwrPrtPN36QITSp3EQaw936yaFoFgAB
 ```
 
@@ -146,7 +150,7 @@ Nice! Now we have the password for the next level!!
 >The password for the next level is stored in the only human-readable file in the inhere directory. Tip: if your terminal is messed up, try the “reset” command.
 
 Let's go ahead and login with the next level `bandit4`
-```bash
+```sh
 ssh -p 2220 bandit4@bandit.labs.overthewire.org
 password: pIwrPrtPN36QITSp3EQaw936yaFoFgAB
 ```
@@ -610,3 +614,338 @@ When we put in the password, as mentioned above, we are successfully logged in -
 This will let us get that password before we get kicked out. Password for `bandit19`
 
 `IueksS7Ubh8G3DCwVzrTd8rAVOwq3M5x`
+
+### Level 19 -> 20
+#### Game Instructions
+> To gain access to the next level, you should use the setuid binary in the homedirectory. Execute it without arguments to find out how to use it. The password for this level can be found in the usual place (/etc/bandit_pass), after you have used the setuid binary.
+
+Using the `bandit20-do` **setuid** binary essentially just lets us run a command as that user. It's binary so trying to `cat` the file won't let you see the underlying code. So just trust the exercise it's letting us work **as bandit20** to **do** a thing.
+
+So let's run the binary and simply run a command after to read the password file in `/etc/bandit_pass`
+
+`./bandit20-do cat /etc/bandit_pass/bandit20`
+
+Now it'll spit out the next password for us.
+
+`GbKksEFF4yrVs6il55v6gwY5aVje5f0j`
+
+### Level 20 -> 21
+#### Game Instructions
+> There is a setuid binary in the homedirectory that does the following: it makes a connection to localhost on the port you specify as a commandline argument. It then reads a line of text from the connection and compares it to the password in the previous level (bandit20). If the password is correct, it will transmit the password for the next level (bandit21).
+
+First we send the string of the last password to a TCP server running on a port of our choice (in this exampe **61137**).
+`echo "GbKksEFF4yrVs6il55v6gwY5aVje5f0j" | nc -l localhost -p 61137 &`
+
+Then we check to make sure it's working
+
+`ps aux`
+
+```USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+bandit20   658  0.0  0.1  21148  5144 pts/54   Ss   17:22   0:00 -bash
+bandit20  1103  0.0  0.1  21148  4860 pts/35   Ss+  16:36   0:00 -bash
+bandit20  1157  0.0  0.0   6300  1584 pts/39   S+   16:36   0:00 nc -l localhost
+bandit20  1523  0.0  0.0   6300  1660 pts/54   S    17:24   0:00 nc -l localhost
+bandit20  1696  0.0  0.0  19188  2372 pts/54   R+   17:24   0:00 ps aux
+bandit20 31119  0.0  0.1  21148  4968 pts/39   Ss   16:32   0:00 -bash
+```
+
+We can see that it is running on process ID **1523**
+
+No we can run the binary to ask the server to send us the next one:
+
+`./suconnect 61137`
+
+Next password:
+`gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr`
+
+### Level 21 -> 22
+#### Game Instructions
+> A program is running automatically at regular intervals from cron, the time-based job scheduler. Look in /etc/cron.d/ for the configuration and see what command is being executed.
+
+Get into the remote machine:
+```
+ssh -p 2220 bandit21@bandit.labs.overthewire.org
+password: gE269g2h3mw3pwgrj0Ha9Uoqen1c9DGr
+```
+
+Looking into the direcory of /etc/cron.d we see a few differenct cronjobs. Let's `cat` the `cronjob_bandit22` file and see what's up
+```
+@reboot bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+* * * * * bandit22 /usr/bin/cronjob_bandit22.sh &> /dev/null
+```
+
+Now we know where the `sh` file is we can cat that as well for more information:
+
+`cat /usr/bin/cronjob_bandit22.sh`
+
+This give us the source code of the `sh` file:
+```
+#!/bin/bash
+chmod 644 /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+cat /etc/bandit_pass/bandit22 > /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv
+```
+
+Once more, let's just `cat` the file in `/tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv`
+
+`cat /tmp/t7O6lds9S0RqQh9aMcz6ShpAoZKF7fgv`
+
+Now we have our next password! Woop!
+
+`Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI`
+
+### Level 22 -> 23
+#### Game Instructions
+> A program is running automatically at regular intervals from cron, the time-based job scheduler. Look in /etc/cron.d/ for the configuration and see what command is being executed.
+
+> NOTE: Looking at shell scripts written by other people is a very useful skill. The script for this level is intentionally made easy to read. If you are having problems understanding what it does, try executing it to see the debug information it prints.
+
+Let's start by getting into the new games
+```
+ssh -p 2220 bandit22@bandit.labs.overthewire.org
+password: Yk7owGAcWjwMVRwrTesJEwB7WVOiILLI
+```
+
+Now we have another cronjob to look into.
+
+Start by `cd`ing into the `/etc/cron.d` directory for the next level **bandit23**
+
+`cd /etc/cron.d`
+
+Then `cat` to get some more info.
+
+`cat cronjob_bandit23`
+And we get:
+```
+@reboot bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+* * * * * bandit23 /usr/bin/cronjob_bandit23.sh  &> /dev/null
+```
+Now let's see what's in that file:
+`cat /usr/bin/cronjob_bandit23.sh`
+And we get:
+```bash
+#!/bin/bash
+myname=$(whoami)
+mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)
+
+echo "Copying passwordfile /etc/bandit_pass/$myname to /tmp/$mytarget"
+
+cat /etc/bandit_pass/$myname > /tmp/$mytarget
+```
+So we see a pretty simple bash script. Now what are these variables? The script tells us:
+`myname=$whoami` - we can simply run `whoami` to get the value of `bandit22`
+`mytarget=$(echo I am user $myname | md5sum | cut -d ' ' -f 1)` - Let's just run this string with the peice we know of - `$myname` (but use **bandit23** which is the next level)
+`echo I am user bandit23 | md5sum | cut -d ' ' -f 1`
+And we get:
+`8ca319486bfbbc3663ea0fbe81326349`
+Now we know what file will be in the `tmp` directory with the password dump:
+`/tmp/8ca319486bfbbc3663ea0fbe81326349` let's `cat` that file:
+`cat /tmp/8ca319486bfbbc3663ea0fbe81326349` and bam... password
+`jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n`
+
+### Level 23 -> 24
+#### Game Instructions
+> A program is running automatically at regular intervals from cron, the time-based job scheduler. Look in /etc/cron.d/ for the configuration and see what command is being executed.
+
+>NOTE: This level requires you to create your own first shell-script. This is a very big step and you should be proud of yourself when you beat this level!
+
+>NOTE 2: Keep in mind that your shell script is removed once executed, so you may want to keep a copy around…
+
+This one looks a bit similar to the previous 2 levels... Let's dig in!
+
+```
+ssh -p 2220 bandit23@bandit.labs.overthewire.org
+password: jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
+```
+
+New password: `UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ`
+
+=============== COMING BACK TO 23 -> 24 ==================
+
+### Level 24 -> 25
+#### Game Instructions
+> A daemon is listening on port 30002 and will give you the password for bandit25 if given the password for bandit24 and a secret numeric 4-digit pincode. There is no way to retrieve the pincode except by going through all of the 10000 combinations, called brute-forcing.
+
+This one is our first scripting for brute force...
+```
+ssh -p 2220 bandit24@bandit.labs.overthewire.org
+password: UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ
+```
+We have a daemon listening on port 30002 for us to send both the previous password + a 4 digit pin. We can do this manually and take a week or so, or we can script it out to try the 10000 combinations. **Our First Brute Attack**
+
+Here's a script:
+```py
+#!/usr/bin/env python3
+# coding: utf-8
+import sys
+import socket
+pincode = 0
+password = "UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ"
+try:
+    # Connect to server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(("127.0.0.1", 30002))
+
+    # Print welcome message
+    welcome_msg = s.recv(2048)
+    print(welcome_msg)
+    # Try brute-forcing
+    while pincode < 10000:
+        pincode_string = str(pincode).zfill(4)
+        message=password+" "+pincode_string+"\n"
+        # Send message
+        s.sendall(message.encode())
+        receive_msg = s.recv(1024)
+        # Check result
+        if "Wrong" in receive_msg:
+            print("Wrong PINCODE: %s" % pincode_string)
+        else:
+            print(receive_msg)
+            break
+        pincode += 1
+finally:
+    sys.exit(1)
+```
+After a while we'll get to the right combination. The pin is **2586** as of my writing.
+
+Next password:
+`uNG9O58gUE7snukf3bvZ0rxhtnjzSGzG`
+
+### Level 25 -> 26
+#### Game Instructions
+> Logging in to bandit26 from bandit25 should be fairly easy… The shell for user bandit26 is not /bin/bash, but something else. Find out what it is, how it works and how to break out of it.
+
+Let's get started:
+```
+ssh -p 2220 bandit25@bandit.labs.overthewire.org
+password: uNG9O58gUE7snukf3bvZ0rxhtnjzSGzG
+```
+
+So here we need to figure out what type of shell **bandit26** is using.
+
+First, we'll check the `passwd` file for `bandit26`
+`cat /etc/passwd | grep bandit26`
+We get
+`bandit26:x:11026:11026:bandit level 26:/home/bandit26:/usr/bin/showtext`
+So no let's `grep` the file we're shown
+`cat /usr/bin/showtext`
+This gives us
+```sh
+#!/bin/sh
+export TERM=linux
+more ~/text.txt
+exit 0
+```
+So now we know he's using `#1/bin/sh`
+
+Then we need to figure out how it works and how to break out of it.
+
+This works by using the `sshkey.private` that is provided in the `home` directory. However, you'll notice that the shell immediately closes out. So let's take a look at the above pulled shell config... Notice the `more ~/text.txt`. It's using `more` to view the file so we'll use that to break in.
+
+No `more` will show one page of data at a time. So what happens if the window is just a **bit too small**? It won't close. This will allow us to use `vim` to break out an gain a shell.
+
+Make the terminal window super tiny (less than 6 lines) and try to get back in using `ssh -i sshkey.private bandit26@localhost`. You'll notice it hangs (Yay!).
+
+Now hit `v` to bring up command options in `vim`. Type:
+`:e /etc/bandit_pass/bandit26`
+
+Now we have it!
+
+`5czgV9L3Xx8JPOyRbXh6lQbmIOWvPT6Z`
+
+**Don't close the terminal we need the same shell to finish the next level!!**
+
+### Level 26 -> 27
+#### Game Instructions
+>Good job getting a shell! Now hurry and grab the password for bandit27!
+
+Ok now this is easy if we keep the same terminal open from the last time. All we are going to do is use the power of `vim` to execute a couple of simple shell commands.
+
+Go back to the command area of `vim` and type in
+`:set shell=/bin/bash` Note: you won't see confirmation
+Now type `:shell` and you should be good to go!
+
+Now navigate to `~` and use the `bandit27-do` file to `cat` as `bandit27`
+
+`./bandit27-do cat /etc/bandit_pass/bandit27`
+
+Boom. Done.
+
+`3ba3118a22e93127a4ed485be72ef5ea`
+
+### Level 27-28
+#### Game Instructions
+> There is a git repository at ssh://bandit27-git@localhost/home/bandit27-git/repo. The password for the user bandit27-git is the same as for the user bandit27.
+
+>Clone the repository and find the password for the next level.
+
+Start it up:
+```
+ssh -p 2220 bandit27@bandit.labs.overthewire.org
+password: 3ba3118a22e93127a4ed485be72ef5ea
+```
+Clone the **repo**
+`git clone ssh://bandit27-git@localhost/home/bandit27-git/repo`
+**Note** the password is the same for the `git` cloning as for the `ssh` login.
+Ok now we have our repo so we `cd repo` to get into the directory and there's only one file `REAMDE`
+Super easy just `cat` the file and there's the password:
+`0ef186ac70e04ea33b4c1853d2526fa2`
+
+### Level 28 -> 29
+#### Game Instructions
+>There is a git repository at ssh://bandit28-git@localhost/home/bandit28-git/repo. The password for the user bandit28-git is the same as for the user bandit28.
+
+I'm going to stay in the same shell as the last exercise for this one and just clone the repo.
+
+If you closed out, however, just login with bandit28
+```
+ssh -p 2220 bandit28@bandit.labs.overthewire.org
+password: 0ef186ac70e04ea33b4c1853d2526fa2
+```
+`git clone ssh://bandit28-git@localhost/home/bandit28-git/repo repo2` * You may notice I've add a **repo2** to specify folder. I don't want to get confused between the last repo and this one.
+Password is `0ef186ac70e04ea33b4c1853d2526fa2`
+`cd` into `repo2` and let's have a look.
+
+Another `README.md` but with no information inside. Knowing that this is `git` and well, the whole point is version control and managing various commits, etc. Let's check the changes to the repo.
+
+`git log`
+```sh
+bandit27@bandit:/tmp/repo12/repo2$ git log
+commit edd935d60906b33f0619605abd1689808ccdd5ee
+Author: Morla Porla <morla@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+   fix info leak
+
+commit c086d11a00c0648d095d04c089786efef5e01264
+Author: Morla Porla <morla@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+   add missing data
+
+commit de2ebe2d5fd1598cd547f4d56247e053be3fdc38
+Author: Ben Dover <noone@overthewire.org>
+Date:   Thu May 7 20:14:49 2020 +0200
+
+   initial commit of README.md
+```
+Looks like they patched an "info leak", so let's check that commit history:
+
+`git log -p`
+```sh
+- username: bandit29
+-- password: bbc96594b4e001778eee9975372716b2
++- password: xxxxxxxxxx
+```
+There we go we have the next password:
+`bbc96594b4e001778eee9975372716b2`
+
+### Level 29 -> 30
+#### Game Instructions
+> There is a git repository at ssh://bandit29-git@localhost/home/bandit29-git/repo. The password for the user bandit29-git is the same as for the user bandit29.
+
+Login as `bandit29`
+```
+ssh -p 2220 bandit29@bandit.labs.overthewire.org
+password: bbc96594b4e001778eee9975372716b2
+```
+Clone the repo to whatever temp directory you choose.
