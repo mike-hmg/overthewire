@@ -757,9 +757,45 @@ ssh -p 2220 bandit23@bandit.labs.overthewire.org
 password: jc1udXuA1tiHqjIsL8yaapX5XIAI6i0n
 ```
 
-New password: `UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ`
+As the hint says: We need to investigate the `/etc/cron.d` file to see what is happening:
+```sh
+#!/bin/bash
+myname=$(whoami)
+cd /var/spool/$myname
+echo "Executing and deleting all scripts in /var/spool/$myname:"
+for i in * .*;
+do
+    if [ "$i" != "." -a "$i" != ".." ];
+    then
+        echo "Handling $i"
+        timeout -s 9 60 ./$i
+        rm -f ./$i
+    fi
+done
+```
 
-=============== COMING BACK TO 23 -> 24 ==================
+We can see that the file is systematically (every 60 sceonds) running every script **as root** in the `/var/spool/$myname` directory and immediately deleting the file after executing.
+
+Because the script is being run as root, we can exploit this if we can manage to get a script in the `/var/spool/bandit24` directory that spits on the password.
+First, let's create a directory to do some work in:
+`mkdir /tmp/myfancydirectory`
+And a file that the password will be copied to:
+`touch /tmp/myfancydirectory/thisisthepassword`
+Next, let's whip up a simple script:
+`nano istealyourpass.sh`
+```
+#!/bin/bash
+
+cat /etc/bandit_pass24 > /tmp/myfancydirectory/thisisthepassword
+```
+This will copy the password to a file called `thisisthepassword`
+Let's `chmod` it so the script can execute it
+`chmod 777 /tmp/myfancydirectory/istealyourpass`
+Now let's quickly copy the file to the `/var/spool/bandit24` directory so it can be picked up
+`cp /tmp/myfancydirectory/istealyourpass`
+And we wait for it to run.
+After a little bit we check the directory and bam we have the password:
+New password: `UoMYTrfrBFHyQXmg6gzctqAwOmw1IohZ`
 
 ### Level 24 -> 25
 #### Game Instructions
@@ -949,3 +985,128 @@ ssh -p 2220 bandit29@bandit.labs.overthewire.org
 password: bbc96594b4e001778eee9975372716b2
 ```
 Clone the repo to whatever temp directory you choose.
+
+`git clone ssh://bandit29-git@localhost/home/bandit29-git/repo`
+
+Now `cd` into it to take a look  around.
+
+There's a `README` file in there but nothing to go off of. Let's check versions and commit history like before:
+
+`git log -p`
+
+Nothing shows up. There must be some `branches` handing around somewhere either local or remote. Let's list all remote and local branches:
+`git branch -a`
+We see a couple of them. Let's switch to the `dev` branch to see if we get anything.
+`git checkout dev`
+Ok let's check this README. Woo! First try:
+```
+Some notes for bandit30 of bandit.
+## credentials
+- username: bandit30
+- password: 5b90576bedb2cc04c86a9e924ce42faf
+```
+
+We now have the password for `bandit30`. On to the next!
+
+### Level 30 -> 31
+#### Game Instructions
+> There is a git repository at ssh://bandit30-git@localhost/home/bandit30-git/repo. The password for the user bandit30-git is the same as for the user bandit30.
+
+> Clone the repository and find the password for the next level.
+
+Let's get started by `ssh`ing in.
+```
+ssh -p 2220 bandit30@bandit.labs.overthewire.org
+password: 5b90576bedb2cc04c86a9e924ce42faf
+```
+Now let's clone that repo
+`git clone ssh://bandit30-git@localhost/home/bandit30-git/repo`
+
+`cd` in to see what's up...
+
+Just an empty README.md
+
+So we check `git` logs for version history... nothing.
+What about other `branches`? Nope... nothing
+So if we dig into git's `tagging` feature, we can see there is one called `secret`
+`git show secret` gives us our password:
+`47e603bb428404d265f59c42920d81e5`
+
+
+### Level 31 -> 32
+#### Game Instructions
+> There is a git repository at ssh://bandit31-git@localhost/home/bandit31-git/repo. The password for the user bandit31-git is the same as for the user bandit31.
+
+```
+ssh -p 2220 bandit31@bandit.labs.overthewire.org
+password: 47e603bb428404d265f59c42920d81e5
+```
+Clone the repo
+`git clone ssh://bandit31-git@localhost/home/bandit31-git/repo`
+
+Ok let's check it out
+`cd repo`
+
+We can see a sweet `README.md` in there. What does is say?
+```
+This time your task is to push a file to the remote repository.
+
+Details:
+    File name: key.txt
+    Content: 'May I come in?'
+    Branch: master
+```
+Right on! All we need to do is create a `key.txt` file and push it to remote ranch and we'll be good to go right?
+
+Well they pulled a little sneaky on us and add `*.txt` to the `.gitignore` file. Which will prevent any type of `txt` file from being uploaded. No worries. We'll just remove that line from the `.gitignore` so we can upload it.
+
+`nano .gitignore` to open the file. Once we have it open we simply delete that line and `ctrl+x` to save it and remove that pesky attribute.
+
+Then we create a file and add the aboe text that is rerquired:
+`echo "May I come in?" > key.txt`
+Great! Now we've created the file so all we need to do stage it and push it
+Add the files:
+`git add --all`
+Commit the files:
+`git commit -m "I did it!!"`
+Then finally push to the `master`branch
+`git push -u origin master`
+
+Bam! We did it!
+
+Here's what we get as feedback:
+```
+remote: .oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
+remote:
+remote: Well done! Here is the password for the next level:
+remote: 56a9bf19c63d650ce78e6ec0354ee45e
+remote:
+remote: .oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.oOo.
+```
+
+Now we have our next password!
+`56a9bf19c63d650ce78e6ec0354ee45e`
+
+### Level 32 -> 33
+#### Game Instructions
+> After all this git stuff its time for another escape. Good luck!
+
+Let's get to it!
+```
+ssh -p 2220 bandit32@bandit.labs.overthewire.org
+password: 56a9bf19c63d650ce78e6ec0354ee45e
+```
+
+This one took a bit for me to figure out. Actually, I didn't really know what I was doing. I just tinkered, tried the usual `ls` `cd` commands, etc. Then I went to just check what kind of shell I was using...
+
+`$0` and what do you know... A wild bash shell appeared! Now that I was in bash I just `ls` the directory and ran `cat` on the final `bandit33` file:
+```
+Congratulations on solving the last level of this game!
+
+At this moment, there are no more levels to play in this game. However, we are constantly working
+on new levels and will most likely expand this game with more levels soon.
+Keep an eye out for an announcement on our usual communication channels!
+In the meantime, you could play some of our other wargames.
+```
+
+That's it. Hopefully they add some more soon!
